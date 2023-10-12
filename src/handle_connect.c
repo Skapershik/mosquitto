@@ -461,6 +461,10 @@ int handle__connect(struct mosquitto *context)
 		return MOSQ_ERR_INVAL;
 	}
 
+	if(context->in_packet.command != CMD_CONNECT){
+		return MOSQ_ERR_MALFORMED_PACKET;
+	}
+
 	/* Don't accept multiple CONNECT commands. */
 	if(context->state != mosq_cs_new){
 		log__printf(NULL, MOSQ_LOG_NOTICE, "Bad client %s sending multiple CONNECT messages.", context->id);
@@ -534,9 +538,9 @@ int handle__connect(struct mosquitto *context)
 		rc = MOSQ_ERR_PROTOCOL;
 		goto handle_connect_error;
 	}
-	if((protocol_version&0x7F) != PROTOCOL_VERSION_v31 && context->in_packet.command != CMD_CONNECT){
-		return MOSQ_ERR_MALFORMED_PACKET;
-	}
+	// if((protocol_version&0x7F) != PROTOCOL_VERSION_v31 && context->in_packet.command != CMD_CONNECT){
+	// 	return MOSQ_ERR_MALFORMED_PACKET;
+	// }
 
 	if(packet__read_byte(&context->in_packet, &connect_flags)){
 		rc = MOSQ_ERR_PROTOCOL;
