@@ -71,7 +71,7 @@ int handle__subscribe(struct mosquitto *context)
 	}
 	if(mid == 0){
 		log__printf(NULL, MOSQ_LOG_ERR, "handle_subscribe.c: 73");
-		return MOSQ_ERR_MALFORMED_PACKET;
+		// return MOSQ_ERR_MALFORMED_PACKET;
 	}
 
 	if(context->protocol == mosq_p_mqtt5){
