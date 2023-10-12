@@ -69,12 +69,14 @@ int handle__publish(struct mosquitto *context)
 		log__printf(NULL, MOSQ_LOG_INFO,
 				"Invalid PUBLISH (QoS=0 and DUP=1) from %s, disconnecting.", context->id);
 		db__msg_store_free(msg);
+		log__printf(NULL, MOSQ_LOG_ERR, "handle_publish.c: 72");
 		return MOSQ_ERR_MALFORMED_PACKET;
 	}
 	if(msg->qos == 3){
 		log__printf(NULL, MOSQ_LOG_INFO,
 				"Invalid QoS in PUBLISH from %s, disconnecting.", context->id);
 		db__msg_store_free(msg);
+		log__printf(NULL, MOSQ_LOG_ERR, "handle_publish.c: 79");
 		return MOSQ_ERR_MALFORMED_PACKET;
 	}
 	if(msg->qos > context->max_qos){
@@ -92,17 +94,20 @@ int handle__publish(struct mosquitto *context)
 
 	if(packet__read_string(&context->in_packet, &msg->topic, &slen)){
 		db__msg_store_free(msg);
+		log__printf(NULL, MOSQ_LOG_ERR, "handle_publish.c: 97");
 		return MOSQ_ERR_MALFORMED_PACKET;
 	}
 	if(!slen && context->protocol != mosq_p_mqtt5){
 		/* Invalid publish topic, disconnect client. */
 		db__msg_store_free(msg);
+		log__printf(NULL, MOSQ_LOG_ERR, "handle_publish.c: 103");
 		return MOSQ_ERR_MALFORMED_PACKET;
 	}
 
 	if(msg->qos > 0){
 		if(packet__read_uint16(&context->in_packet, &mid)){
 			db__msg_store_free(msg);
+			log__printf(NULL, MOSQ_LOG_ERR, "handle_publish.c: 110");
 			return MOSQ_ERR_MALFORMED_PACKET;
 		}
 		if(mid == 0){
@@ -205,6 +210,7 @@ int handle__publish(struct mosquitto *context)
 	if(mosquitto_pub_topic_check(msg->topic) != MOSQ_ERR_SUCCESS){
 		/* Invalid publish topic, just swallow it. */
 		db__msg_store_free(msg);
+		log__printf(NULL, MOSQ_LOG_ERR, "handle_publish.c: 213");
 		return MOSQ_ERR_MALFORMED_PACKET;
 	}
 
@@ -240,6 +246,7 @@ int handle__publish(struct mosquitto *context)
 
 		if(packet__read_bytes(&context->in_packet, msg->payload, msg->payloadlen)){
 			db__msg_store_free(msg);
+			log__printf(NULL, MOSQ_LOG_ERR, "handle_publish.c: 249");
 			return MOSQ_ERR_MALFORMED_PACKET;
 		}
 	}

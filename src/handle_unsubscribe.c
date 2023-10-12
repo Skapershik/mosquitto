@@ -46,17 +46,25 @@ int handle__unsubscribe(struct mosquitto *context)
 		return MOSQ_ERR_PROTOCOL;
 	}
 	if(context->in_packet.command != (CMD_UNSUBSCRIBE|2)){
+		log__printf(NULL, MOSQ_LOG_ERR, "handle_unsubscribe.c: 49");
 		return MOSQ_ERR_MALFORMED_PACKET;
 	}
 	log__printf(NULL, MOSQ_LOG_DEBUG, "Received UNSUBSCRIBE from %s", context->id);
 
 	if(context->protocol != mosq_p_mqtt31){
 		if((context->in_packet.command&0x0F) != 0x02){
+			log__printf(NULL, MOSQ_LOG_ERR, "handle_unsubscribe.c: 56");
 			return MOSQ_ERR_MALFORMED_PACKET;
 		}
 	}
-	if(packet__read_uint16(&context->in_packet, &mid)) return MOSQ_ERR_MALFORMED_PACKET;
-	if(mid == 0) return MOSQ_ERR_MALFORMED_PACKET;
+	if(packet__read_uint16(&context->in_packet, &mid)){
+		log__printf(NULL, MOSQ_LOG_ERR, "handle_unsubscribe.c: 61");
+		return MOSQ_ERR_MALFORMED_PACKET;
+	}
+	if(mid == 0){
+		log__printf(NULL, MOSQ_LOG_ERR, "handle_unsubscribe.c: 65");
+		return MOSQ_ERR_MALFORMED_PACKET;
+	}
 
 	if(context->protocol == mosq_p_mqtt5){
 		rc = property__read_all(CMD_UNSUBSCRIBE, &context->in_packet, &properties);
@@ -65,6 +73,7 @@ int handle__unsubscribe(struct mosquitto *context)
 			 * MOSQ_ERR_MALFORMED_PACKET, but this is would change the library
 			 * return codes so needs doc changes as well. */
 			if(rc == MOSQ_ERR_PROTOCOL){
+				log__printf(NULL, MOSQ_LOG_ERR, "handle_unsubscribe.c: 76");
 				return MOSQ_ERR_MALFORMED_PACKET;
 			}else{
 				return rc;
@@ -77,6 +86,7 @@ int handle__unsubscribe(struct mosquitto *context)
 	if(context->protocol == mosq_p_mqtt311 || context->protocol == mosq_p_mqtt5){
 		if(context->in_packet.pos == context->in_packet.remaining_length){
 			/* No topic specified, protocol error. */
+			log__printf(NULL, MOSQ_LOG_ERR, "handle_unsubscribe.c: 89");
 			return MOSQ_ERR_MALFORMED_PACKET;
 		}
 	}
@@ -91,6 +101,7 @@ int handle__unsubscribe(struct mosquitto *context)
 		sub = NULL;
 		if(packet__read_string(&context->in_packet, &sub, &slen)){
 			mosquitto__free(reason_codes);
+			log__printf(NULL, MOSQ_LOG_ERR, "handle_unsubscribe.c: 104");
 			return MOSQ_ERR_MALFORMED_PACKET;
 		}
 
@@ -100,6 +111,7 @@ int handle__unsubscribe(struct mosquitto *context)
 					context->id);
 			mosquitto__free(sub);
 			mosquitto__free(reason_codes);
+			log__printf(NULL, MOSQ_LOG_ERR, "handle_unsubscribe.c: 114");
 			return MOSQ_ERR_MALFORMED_PACKET;
 		}
 		if(mosquitto_sub_topic_check(sub)){
@@ -108,6 +120,7 @@ int handle__unsubscribe(struct mosquitto *context)
 					context->id);
 			mosquitto__free(sub);
 			mosquitto__free(reason_codes);
+			log__printf(NULL, MOSQ_LOG_ERR, "handle_unsubscribe.c: 123");
 			return MOSQ_ERR_MALFORMED_PACKET;
 		}
 

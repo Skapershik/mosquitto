@@ -38,6 +38,7 @@ int handle__disconnect(struct mosquitto *context)
 	}
 
 	if(context->in_packet.command != CMD_DISCONNECT){
+		log__printf(NULL, MOSQ_LOG_ERR, "handle_disconnect.c: 41");
 		return MOSQ_ERR_MALFORMED_PACKET;
 	}
 

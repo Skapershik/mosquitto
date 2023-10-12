@@ -53,6 +53,7 @@ int handle__subscribe(struct mosquitto *context)
 		return MOSQ_ERR_PROTOCOL;
 	}
 	if(context->in_packet.command != (CMD_SUBSCRIBE|2)){
+		log__printf(NULL, MOSQ_LOG_ERR, "handle_subscribe.c: 56");
 		return MOSQ_ERR_MALFORMED_PACKET;
 	}
 
@@ -60,11 +61,18 @@ int handle__subscribe(struct mosquitto *context)
 
 	if(context->protocol != mosq_p_mqtt31){
 		if((context->in_packet.command&0x0F) != 0x02){
+			log__printf(NULL, MOSQ_LOG_ERR, "handle_subscribe.c: 64");
 			return MOSQ_ERR_MALFORMED_PACKET;
 		}
 	}
-	if(packet__read_uint16(&context->in_packet, &mid)) return MOSQ_ERR_MALFORMED_PACKET;
-	if(mid == 0) return MOSQ_ERR_MALFORMED_PACKET;
+	if(packet__read_uint16(&context->in_packet, &mid)){
+		log__printf(NULL, MOSQ_LOG_ERR, "handle_subscribe.c: 69");
+		return MOSQ_ERR_MALFORMED_PACKET;
+	}
+	if(mid == 0){
+		log__printf(NULL, MOSQ_LOG_ERR, "handle_subscribe.c: 73");
+		return MOSQ_ERR_MALFORMED_PACKET;
+	}
 
 	if(context->protocol == mosq_p_mqtt5){
 		rc = property__read_all(CMD_SUBSCRIBE, &context->in_packet, &properties);
@@ -73,6 +81,7 @@ int handle__subscribe(struct mosquitto *context)
 			 * MOSQ_ERR_MALFORMED_PACKET, but this is would change the library
 			 * return codes so needs doc changes as well. */
 			if(rc == MOSQ_ERR_PROTOCOL){
+				log__printf(NULL, MOSQ_LOG_ERR, "handle_subscribe.c: 84");
 				return MOSQ_ERR_MALFORMED_PACKET;
 			}else{
 				return rc;
@@ -85,6 +94,7 @@ int handle__subscribe(struct mosquitto *context)
 			/* If the identifier was force set to 0, this is an error */
 			if(subscription_identifier == 0){
 				mosquitto_property_free_all(&properties);
+				log__printf(NULL, MOSQ_LOG_ERR, "handle_subscribe.c: 97");
 				return MOSQ_ERR_MALFORMED_PACKET;
 			}
 		}
@@ -97,6 +107,7 @@ int handle__subscribe(struct mosquitto *context)
 		sub = NULL;
 		if(packet__read_string(&context->in_packet, &sub, &slen)){
 			mosquitto__free(payload);
+			log__printf(NULL, MOSQ_LOG_ERR, "handle_subscribe.c: 110");
 			return MOSQ_ERR_MALFORMED_PACKET;
 		}
 
@@ -107,6 +118,7 @@ int handle__subscribe(struct mosquitto *context)
 						context->address);
 				mosquitto__free(sub);
 				mosquitto__free(payload);
+				log__printf(NULL, MOSQ_LOG_ERR, "handle_subscribe.c: 121");
 				return MOSQ_ERR_MALFORMED_PACKET;
 			}
 			if(mosquitto_sub_topic_check(sub)){
@@ -115,12 +127,14 @@ int handle__subscribe(struct mosquitto *context)
 						context->address);
 				mosquitto__free(sub);
 				mosquitto__free(payload);
+				log__printf(NULL, MOSQ_LOG_ERR, "handle_subscribe.c: 130");
 				return MOSQ_ERR_MALFORMED_PACKET;
 			}
 
 			if(packet__read_byte(&context->in_packet, &subscription_options)){
 				mosquitto__free(sub);
 				mosquitto__free(payload);
+				log__printf(NULL, MOSQ_LOG_ERR, "handle_subscribe.c: 137");
 				return MOSQ_ERR_MALFORMED_PACKET;
 			}
 			if(context->protocol == mosq_p_mqtt31 || context->protocol == mosq_p_mqtt311){
@@ -136,6 +150,7 @@ int handle__subscribe(struct mosquitto *context)
 				if(retain_handling == 0x30 || (subscription_options & 0xC0) != 0){
 					mosquitto__free(sub);
 					mosquitto__free(payload);
+					log__printf(NULL, MOSQ_LOG_ERR, "handle_subscribe.c: 153");
 					return MOSQ_ERR_MALFORMED_PACKET;
 				}
 			}
@@ -145,6 +160,7 @@ int handle__subscribe(struct mosquitto *context)
 						context->address);
 				mosquitto__free(sub);
 				mosquitto__free(payload);
+				log__printf(NULL, MOSQ_LOG_ERR, "handle_subscribe.c: 163");
 				return MOSQ_ERR_MALFORMED_PACKET;
 			}
 			if(qos > context->max_qos){
@@ -225,6 +241,7 @@ int handle__subscribe(struct mosquitto *context)
 	if(context->protocol != mosq_p_mqtt31){
 		if(payloadlen == 0){
 			/* No subscriptions specified, protocol error. */
+			log__printf(NULL, MOSQ_LOG_ERR, "handle_subscribe.c: 244");
 			return MOSQ_ERR_MALFORMED_PACKET;
 		}
 	}

@@ -66,6 +66,7 @@ int handle__connack(struct mosquitto *mosq)
 
 	assert(mosq);
 	if(mosq->in_packet.command != CMD_CONNACK){
+		log__printf(NULL, MOSQ_LOG_ERR, "handle_connack.c: 69");
 		return MOSQ_ERR_MALFORMED_PACKET;
 	}
 

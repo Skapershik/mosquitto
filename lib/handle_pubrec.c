@@ -50,6 +50,7 @@ int handle__pubrec(struct mosquitto *mosq)
 		return MOSQ_ERR_PROTOCOL;
 	}
 	if(mosq->in_packet.command != CMD_PUBREC){
+		log__printf(NULL, MOSQ_LOG_ERR, "handle_pubrec.c: 53");
 		return MOSQ_ERR_MALFORMED_PACKET;
 	}
 
@@ -86,6 +87,7 @@ int handle__pubrec(struct mosquitto *mosq)
 #ifdef WITH_BROKER
 		mosquitto_property_free_all(&properties);
 #endif
+		log__printf(NULL, MOSQ_LOG_ERR, "handle_pubrec.c: 90");
 		return MOSQ_ERR_MALFORMED_PACKET;
 	}
 

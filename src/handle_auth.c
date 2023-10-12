@@ -48,11 +48,15 @@ int handle__auth(struct mosquitto *context)
 		return MOSQ_ERR_PROTOCOL;
 	}
 	if(context->in_packet.command != CMD_AUTH){
+		log__printf(NULL, MOSQ_LOG_ERR, "handle_auth.c: 51");
 		return MOSQ_ERR_MALFORMED_PACKET;
 	}
 
 	if(context->in_packet.remaining_length > 0){
-		if(packet__read_byte(&context->in_packet, &reason_code)) return MOSQ_ERR_MALFORMED_PACKET;
+		if(packet__read_byte(&context->in_packet, &reason_code)) {
+			log__printf(NULL, MOSQ_LOG_ERR, "handle_auth.c: 57");
+			return MOSQ_ERR_MALFORMED_PACKET;
+		}
 		if(reason_code != MQTT_RC_CONTINUE_AUTHENTICATION
 				&& reason_code != MQTT_RC_REAUTHENTICATE){
 

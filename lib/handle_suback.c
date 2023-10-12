@@ -51,6 +51,7 @@ int handle__suback(struct mosquitto *mosq)
 		return MOSQ_ERR_PROTOCOL;
 	}
 	if(mosq->in_packet.command != CMD_SUBACK){
+		log__printf(NULL, MOSQ_LOG_ERR, "handle_suback.c: 54");
 		return MOSQ_ERR_MALFORMED_PACKET;
 	}
 

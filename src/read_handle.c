@@ -93,6 +93,7 @@ int handle__packet(struct mosquitto *context)
 		if(rc == MOSQ_ERR_PROTOCOL || rc == MOSQ_ERR_DUPLICATE_PROPERTY){
 			send__disconnect(context, MQTT_RC_PROTOCOL_ERROR, NULL);
 		}else if(rc == MOSQ_ERR_MALFORMED_PACKET){
+			log__printf(NULL, MOSQ_LOG_ERR, "read_handle.c: 96");
 			send__disconnect(context, MQTT_RC_MALFORMED_PACKET, NULL);
 		}else if(rc == MOSQ_ERR_QOS_NOT_SUPPORTED){
 			send__disconnect(context, MQTT_RC_QOS_NOT_SUPPORTED, NULL);

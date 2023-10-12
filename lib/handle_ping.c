@@ -45,6 +45,7 @@ int handle__pingreq(struct mosquitto *mosq)
 		return MOSQ_ERR_PROTOCOL;
 	}
 	if(mosq->in_packet.command != CMD_PINGREQ){
+		log__printf(NULL, MOSQ_LOG_ERR, "handle_ping.c: 48");
 		return MOSQ_ERR_MALFORMED_PACKET;
 	}
 

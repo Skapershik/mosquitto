@@ -461,9 +461,9 @@ int handle__connect(struct mosquitto *context)
 		return MOSQ_ERR_INVAL;
 	}
 
-	if(context->in_packet.command != CMD_CONNECT){
-		return MOSQ_ERR_MALFORMED_PACKET;
-	}
+	// if(context->in_packet.command != CMD_CONNECT){
+	// 	return MOSQ_ERR_MALFORMED_PACKET;
+	// }
 
 	/* Don't accept multiple CONNECT commands. */
 	if(context->state != mosq_cs_new){
@@ -538,9 +538,10 @@ int handle__connect(struct mosquitto *context)
 		rc = MOSQ_ERR_PROTOCOL;
 		goto handle_connect_error;
 	}
-	// if((protocol_version&0x7F) != PROTOCOL_VERSION_v31 && context->in_packet.command != CMD_CONNECT){
-	// 	return MOSQ_ERR_MALFORMED_PACKET;
-	// }
+	if((protocol_version&0x7F) != PROTOCOL_VERSION_v31 && context->in_packet.command != CMD_CONNECT){
+		log__printf(NULL, MOSQ_LOG_ERR, "handle_connect.c: 542");
+		return MOSQ_ERR_MALFORMED_PACKET;
+	}
 
 	if(packet__read_byte(&context->in_packet, &connect_flags)){
 		rc = MOSQ_ERR_PROTOCOL;
@@ -703,6 +704,7 @@ int handle__connect(struct mosquitto *context)
 			rc = MOSQ_ERR_NOMEM;
 			goto handle_connect_error;
 		}else if(rc == MOSQ_ERR_MALFORMED_PACKET){
+			log__printf(NULL, MOSQ_LOG_ERR, "handle_connect.c: 706");
 			if(context->protocol == mosq_p_mqtt31){
 				/* Password flag given, but no password. Ignore. */
 			}else{

@@ -436,6 +436,7 @@ int packet__read(struct mosquitto *mosq)
 				 * Anything more likely means a broken/malicious client.
 				 */
 				if(mosq->in_packet.remaining_count < -4){
+					log__printf(NULL, MOSQ_LOG_ERR, "packet_mosq.c: 439");
 					return MOSQ_ERR_MALFORMED_PACKET;
 				}
 
@@ -471,6 +472,7 @@ int packet__read(struct mosquitto *mosq)
 		switch(mosq->in_packet.command & 0xF0){
 			case CMD_CONNECT:
 				if(mosq->in_packet.remaining_length > 100000){ /* Arbitrary limit, make configurable */
+					log__printf(NULL, MOSQ_LOG_ERR, "packet_mosq.c: 475");
 					return MOSQ_ERR_MALFORMED_PACKET;
 				}
 				break;
@@ -481,6 +483,7 @@ int packet__read(struct mosquitto *mosq)
 			case CMD_PUBCOMP:
 			case CMD_UNSUBACK:
 				if(mosq->protocol != mosq_p_mqtt5 && mosq->in_packet.remaining_length != 2){
+					log__printf(NULL, MOSQ_LOG_ERR, "packet_mosq.c: 486");
 					return MOSQ_ERR_MALFORMED_PACKET;
 				}
 				break;
@@ -488,12 +491,14 @@ int packet__read(struct mosquitto *mosq)
 			case CMD_PINGREQ:
 			case CMD_PINGRESP:
 				if(mosq->in_packet.remaining_length != 0){
+					log__printf(NULL, MOSQ_LOG_ERR, "packet_mosq.c: 494");
 					return MOSQ_ERR_MALFORMED_PACKET;
 				}
 				break;
 
 			case CMD_DISCONNECT:
 				if(mosq->protocol != mosq_p_mqtt5 && mosq->in_packet.remaining_length != 0){
+					log__printf(NULL, MOSQ_LOG_ERR, "packet_mosq.c: 501");
 					return MOSQ_ERR_MALFORMED_PACKET;
 				}
 				break;

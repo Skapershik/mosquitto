@@ -54,6 +54,7 @@ int handle__pubrel(struct mosquitto *mosq)
 		return MOSQ_ERR_PROTOCOL;
 	}
 	if(mosq->protocol != mosq_p_mqtt31 && mosq->in_packet.command != (CMD_PUBREL|2)){
+		log__printf(NULL, MOSQ_LOG_ERR, "handle_pubrel.c: 57");
 		return MOSQ_ERR_MALFORMED_PACKET;
 	}
 
@@ -84,6 +85,7 @@ int handle__pubrel(struct mosquitto *mosq)
 #ifdef WITH_BROKER
 		mosquitto_property_free_all(&properties);
 #endif
+		log__printf(NULL, MOSQ_LOG_ERR, "handle_pubrec.c: 88");
 		return MOSQ_ERR_MALFORMED_PACKET;
 	}
 

@@ -53,6 +53,7 @@ int handle__pubackcomp(struct mosquitto *mosq, const char *type)
 	}
 	if(mosq->protocol != mosq_p_mqtt31){
 		if((mosq->in_packet.command&0x0F) != 0x00){
+			log__printf(NULL, MOSQ_LOG_ERR, "handle_pubackcomp.c: 56");
 			return MOSQ_ERR_MALFORMED_PACKET;
 		}
 	}
@@ -65,11 +66,13 @@ int handle__pubackcomp(struct mosquitto *mosq, const char *type)
 	if(rc) return rc;
 	if(type[3] == 'A'){ /* pubAck or pubComp */
 		if(mosq->in_packet.command != CMD_PUBACK){
+			log__printf(NULL, MOSQ_LOG_ERR, "handle_pubackcomp.c: 69");
 			return MOSQ_ERR_MALFORMED_PACKET;
 		}
 		qos = 1;
 	}else{
 		if(mosq->in_packet.command != CMD_PUBCOMP){
+			log__printf(NULL, MOSQ_LOG_ERR, "handle_pubackcomp.c: 75");
 			return MOSQ_ERR_MALFORMED_PACKET;
 		}
 		qos = 2;
@@ -115,6 +118,7 @@ int handle__pubackcomp(struct mosquitto *mosq, const char *type)
 	}
 	if(mosq->in_packet.pos < mosq->in_packet.remaining_length){
 		mosquitto_property_free_all(&properties);
+		log__printf(NULL, MOSQ_LOG_ERR, "handle_pubackcomp.c: 121");
 		return MOSQ_ERR_MALFORMED_PACKET;
 	}
 

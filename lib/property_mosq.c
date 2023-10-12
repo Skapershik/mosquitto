@@ -144,6 +144,7 @@ static int property__read(struct mosquitto__packet *packet, uint32_t *len, mosqu
 #ifdef WITH_BROKER
 			log__printf(NULL, MOSQ_LOG_DEBUG, "Unsupported property type: %d", property_identifier);
 #endif
+			log__printf(NULL, MOSQ_LOG_ERR, "property_mosq.c: 147");
 			return MOSQ_ERR_MALFORMED_PACKET;
 	}
 
