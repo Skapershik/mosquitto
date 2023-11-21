@@ -1013,6 +1013,11 @@ static int mosquitto_unpwd_check_default(int event, void *event_data, void *user
 		unpwd_ref = db.config->security_options.unpwd;
 	}
 
+	// Don't need to check user if anonymous connections allowed
+	if (db.config->security_options.allow_anonymous) {
+		return MOSQ_ERR_SUCCESS;
+	}
+
 	HASH_FIND(hh, unpwd_ref, ed->client->username, strlen(ed->client->username), u);
 	if(u){
 		if(u->password){
